@@ -1,65 +1,51 @@
 <div align="center">
 
-```
+# Ryomen Sukuna AI
 
-██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗
-██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝
-██████╔╝██████╔╝██████╔╝█████╗  ███████╗███████╗
-██╔═══╝ ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║
-██║     ██║     ██║  ██║███████╗███████║███████║
-╚═╝     ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
-```
+**A Discord bot that becomes whoever you want it to be.**
 
+*Mention it. Talk to it. It remembers you.*
 
-# Ryomen-Sukuna-Ai-
-
-
-<div align="center">
-
-
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
-
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
+[![discord.py](https://img.shields.io/badge/discord.py-2.3+-5865F2?style=flat&logo=discord&logoColor=white)](https://discordpy.readthedocs.io)
+[![Model](https://img.shields.io/badge/Model-DeepSeek_V3-FF6B35?style=flat)](https://huggingface.co/deepseek-ai/DeepSeek-V3-0324)
+[![Azure](https://img.shields.io/badge/Hosted_on-Azure-0078D4?style=flat&logo=microsoftazure&logoColor=white)](https://azure.microsoft.com)
 
 </div>
 
 ---
 
+## What is this?
 
-## 📖 About
-
-<div align="center">
-
----
-
-## ✨ Features
-
-- ✅ **Mention-based chat** — ping the bot and it responds in character
-- ✅ **Multiple built-in personas** — Sukuna, Luffy, Doraemon and more
-- ✅ **Per-server custom personas** — admins can set a server-specific persona with `/update_persona`
-- ✅ **Long-term memory** — summarizes who you are and what your server is like, persisted in SQLite across restarts
-- ✅ **Smart prompt assembly** — every reply is built as `Persona → Server Memory → User Memory → Recent Messages → Your Message`
+Ryomen Sukuna AI is a Discord bot that roleplays as custom characters using **DeepSeek V3** through the Hugging Face Inference API. Out of the box it plays as Ryomen Sukuna from Jujutsu Kaisen — but every server can set its own persona, and the bot **remembers** your conversations over time.
 
 ---
 
-## 🛠️ Tech Stack
+## Features
 
-**Languages**: `Python`
-
-**Frameworks**: `Flask`
-
-**Tools**: `pip/poetry`
+- **Mention-based chat** — ping the bot and it responds in character
+- **Multiple built-in personas** — Sukuna, Luffy, Doraemon and more
+- **Per-server custom personas** — admins can set a server-specific persona with `/update_persona`
+- **Long-term memory** — summarizes who you are and what your server is like, persisted in SQLite across restarts
+- **Smart prompt assembly** — every reply is built as `Persona → Server Memory → User Memory → Recent Messages → Your Message`
 
 ---
 
-## 🚀 Getting Started
+## Built-in Personas
 
-### Prerequisites
+| File | Character | Series |
+|---|---|---|
+| `chat.txt` | Ryomen Sukuna | Jujutsu Kaisen |
+| `chat2.txt` | Ryomen Sukuna (alt) | Jujutsu Kaisen |
+| `chat3.txt` | Monkey D. Luffy | One Piece |
+| `chat4.txt` | Doraemon | Doraemon |
 
-- Python 3.8+
+To switch the global default, change the filename at the top of `main.py`. Or use `/update_persona` to override per-server without touching code.
 
-### Installation
+---
 
-```bash
+## Setup
+
 **1. Clone**
 ```bash
 git clone https://github.com/lukan-lawslaf/Ryomen-Sukuna-Ai-
@@ -90,35 +76,48 @@ python main.py
 `bot_data.db` is created automatically and stores all personas and memories.
 
 ---
+
+## Commands
+
+| Command | Description | Permission |
+|---|---|---|
+| `/update_persona` | View the current server persona | Manage Server |
+| `/update_persona new_persona:<text>` | Set a custom persona for this server (max 2000 chars) | Manage Server |
+
+---
+
+## How Memory Works
+
+The bot doesn't log every message — it summarizes periodically:
+
+1. Your messages are buffered in memory
+2. After **15 messages**, the AI writes a short summary of what it knows about you (preferences, topics, jokes, facts) and saves it to the database
+3. Server-wide memory is updated at the same time
+4. On your next message, both summaries are injected into the prompt before the AI replies
+
+---
+
+## Project Structure
+
+```
+main.py          Bot entry point — events, slash commands, prompt builder
+db.py            SQLite layer — guild personas, guild memories, user memories
+memory.py        Message buffer and summarization logic
+keep_alive.py    Flask health-check server (for Azure hosting)
+chat.txt         Sukuna persona
+chat2.txt        Sukuna alternate
+chat3.txt        Luffy persona
+chat4.txt        Doraemon persona
+requirements.txt
 ```
 
 ---
 
-## 🤝 Contributing
+## Tech Stack
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-
-
----
-<div align="center">
-
-**Made with ❤️ by [lukan-lawslaf](https://github.com/lukan-lawslaf)**
-
-⭐ Star this repo if you found it helpful!
-
-</div>
+| | |
+|---|---|
+| Discord library | [discord.py](https://discordpy.readthedocs.io) |
+| AI model | DeepSeek V3 via Hugging Face Inference API |
+| Storage | SQLite |
+| Hosting | Azure App Service (B1) |
